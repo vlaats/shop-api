@@ -10,7 +10,6 @@ dotenv.config();
 
 const server = jsonServer.create();
 const router = jsonServer.router("./database.json");
-const userDB = JSON.parse(fs.readFileSync("./users.json", "UTF-8"));
 
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
@@ -32,11 +31,13 @@ function verifyToken(token) {
 
 // Check if the user exists in database
 function isAuthenticated({ email, password }) {
+  const userDB = JSON.parse(fs.readFileSync("./users.json", "UTF-8"));
   return userDB.users.findIndex(user => user.email === email && user.password === password) !== -1;
 }
 
 // Get current user
 function getCurrentUser(email) {
+  const userDB = JSON.parse(fs.readFileSync("./users.json", "UTF-8"));
   const currentUser = userDB.users.find(user => user.email === email);
   if (currentUser) {
     return {
@@ -59,7 +60,7 @@ server.post("/auth/register", (req, res) => {
     return;
   }
 
-  fs.readFile("./users.json", (err, data) => {  
+  fs.readFile("./users.json", (err, data) => {
     if (err) {
       const status = 401;
       const message = err;
