@@ -17,7 +17,7 @@ npm install
 * Server will start on port 8000
 
 ```
-npm start-server
+npm run start-server
 ```
 
 ## Api endpoints
