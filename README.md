@@ -184,3 +184,14 @@ DELETE: http://localhost:8000/cart-items/1
 
 Authorization: "Bearer <accessToken>"
 ```
+
+* Upload file
+
+```
+POST: http://localhost:8000/upload-file
+
+payload:
+file: FormData
+
+Authorization: "Bearer <accessToken>"
+```

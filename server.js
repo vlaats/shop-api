@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const jsonServer = require("json-server");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const fileUpload = require("express-fileupload");
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
 server.use(jsonServer.defaults());
 server.use("/static", express.static(path.join(__dirname, "public")));
+server.use(fileUpload({ createParentPath: true }));
 
 const SECRET_KEY = process.env.ACCESS_TOKEN_SECRET;
 const expiresIn = "1h";
@@ -126,6 +128,29 @@ server.get("/auth/current-user", (req, res) => {
   const status = 401;
   const message = "User not found";
   res.status(401).json({ status, message });
+});
+
+server.post("/upload-file", (req, res) => {
+  if (req.headers.authorization === undefined || req.headers.authorization.split(' ')[0] !== "Bearer") {
+    const status = 401;
+    const message = "Error in authorization format";
+    res.status(status).json({ status, message });
+    return;
+  }
+  
+  try {
+    if (!req.files) {
+      res.status(404).json("No file to upload!");
+    } else {
+      let file = req.files.file;
+
+      file.mv("./public/images/" + file.name);
+
+      res.status(200).json({ fileName: file.name });
+    }
+  } catch (error) {
+    res.status(500).json(err);
+  }
 });
 
 server.use(/^(?!\/auth).*$/, (req, res, next) => {
